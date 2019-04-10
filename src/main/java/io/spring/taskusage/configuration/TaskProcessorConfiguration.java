@@ -18,24 +18,17 @@ package io.spring.taskusage.configuration;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.aws.core.io.s3.PathMatchingSimpleStorageResourcePatternResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties(TaskUsageProperties.class)
 public class TaskProcessorConfiguration {
 
 	@Bean
-	public S3Processor s3Processor(PathMatchingSimpleStorageResourcePatternResolver resourcePatternResolver,
-			TaskUsageProperties taskUsageProperties, DataSource dataSource) {
-		return new S3Processor(resourcePatternResolver, taskUsageProperties, dataSource);
+	public S3Processor s3Processor(
+			PathMatchingSimpleStorageResourcePatternResolver resourcePatternResolver,
+			DataSource dataSource) {
+		return new S3Processor(resourcePatternResolver,dataSource);
 	}
-
-	@Bean
-	public TaskUsageProperties taskUsageProperties() {
-		return new TaskUsageProperties();
-	}
-
 }

@@ -34,7 +34,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cloud.aws.core.io.s3.PathMatchingSimpleStorageResourcePatternResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -48,8 +48,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class S3taskbillpullApplicationTests {
-
-	private static final String FILE_NAME = "test.json";
 
 	@Test
 	public void testRepository() {
@@ -86,7 +84,9 @@ public class S3taskbillpullApplicationTests {
 		@Bean
 		public PathMatchingSimpleStorageResourcePatternResolver pathMatchingSimpleStorageResourcePatternResolver() throws IOException {
 			PathMatchingSimpleStorageResourcePatternResolver pathMatchingResourceResolver = mock(PathMatchingSimpleStorageResourcePatternResolver.class);
-			Resource[] resources = {new ClassPathResource(FILE_NAME)};
+			Resource[] resources = {new ByteArrayResource(
+					("[{\"id\":\"1\",\"firstName\":\"jane\",\"lastName\":\"doe\"," +
+							"\"minutes\":\"500\",\"dataUsage\":\"1000\"}]").getBytes())};
 			when(pathMatchingResourceResolver.getResources(anyString())).thenReturn(resources);
 
 			return pathMatchingResourceResolver;
