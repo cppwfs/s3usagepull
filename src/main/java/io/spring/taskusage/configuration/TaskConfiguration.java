@@ -16,14 +16,21 @@
 
 package io.spring.taskusage.configuration;
 
+import javax.annotation.PostConstruct;
+
 import com.amazonaws.services.s3.AmazonS3;
 
+import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.aws.core.io.s3.PathMatchingSimpleStorageResourcePatternResolver;
 import org.springframework.cloud.task.configuration.EnableTask;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.weaving.LoadTimeWeaverAware;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.instrument.classloading.LoadTimeWeaver;
 
 @Configuration
 @EnableTask
@@ -40,4 +47,28 @@ public class TaskConfiguration {
 			s3Processor.processResources();
 		};
 	}
+
+	/**
+	 * Work-around for https://github.com/spring-projects/spring-boot/issues/13042
+	 */
+	@Configuration
+	protected static class DataSourceInitializerInvokerConfiguration implements LoadTimeWeaverAware {
+
+		@Autowired
+		private ListableBeanFactory beanFactory;
+
+		@PostConstruct
+		public void init() {
+			String cls = "org.springframework.boot.autoconfigure.jdbc.DataSourceInitializerInvoker";
+			if (beanFactory.containsBean(cls)) {
+				beanFactory.getBean(cls);
+			}
+		}
+
+		@Override
+		public void setLoadTimeWeaver(LoadTimeWeaver ltw) {
+		}
+
+	}
+
 }

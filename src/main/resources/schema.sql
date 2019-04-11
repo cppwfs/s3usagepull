@@ -1,4 +1,4 @@
-CREATE TABLE BILL_USAGE
+CREATE TABLE IF NOT EXISTS BILL_USAGE
 (
    id int,
    first_name varchar(50),
